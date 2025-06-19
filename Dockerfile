@@ -30,6 +30,9 @@ COPY deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
+# Run Laravel setup
+RUN php artisan config:cache && php artisan migrate --force
+
 # Expose HTTP port
 EXPOSE 80
 
