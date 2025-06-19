@@ -29,14 +29,15 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Copy existing application key or generate a new one later
-# ENV APP_KEY=base64:YOUR_KEY_HERE
-
 # Set permissions
 RUN chown -R www-data:www-data /var/www
 
 # Expose port 8000
 EXPOSE 8000
+
+# Generate Laravel app key and run migrations
+RUN php artisan key:generate
+RUN php artisan migrate --force
 
 # Start Laravel server
 CMD php artisan serve --host=0.0.0.0 --port=8000
