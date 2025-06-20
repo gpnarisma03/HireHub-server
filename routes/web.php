@@ -20,12 +20,8 @@ Route::get('/', function () {
 
 
 
-
-Route::get('/run-migrations', function () {
-    try {
-        Artisan::call('migrate', ['--force' => true]);
-        return '✅ Migrations ran successfully!';
-    } catch (\Exception $e) {
-        return '❌ Migration failed: ' . $e->getMessage();
-    }
+Route::get('/run-storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created';
 });
+

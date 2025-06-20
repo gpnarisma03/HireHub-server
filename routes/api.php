@@ -13,8 +13,8 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\ApplicationController;
 
 
-Route::get('/', function () {
-    return '✅ Laravel is running!';
+Route::get('/ping', function () {
+    return 'pong';
 });
 
 
