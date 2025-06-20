@@ -1,40 +1,41 @@
+# Base PHP image with FPM
 FROM php:8.2-fpm
 
-# Install system dependencies
+# Install system packages
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    curl \
-    git \
-    libzip-dev \
     nginx \
     supervisor \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    git \
+    unzip \
+    curl \
+    libzip-dev \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install pdo_mysql zip
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy Laravel app
-COPY . .
+# Copy entire Laravel app (this works since Dockerfile is root-level)
+COPY . /var/www
 
-# Copy configs
-COPY deploy/nginx.conf /etc/nginx/sites-available/default
-COPY deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Copy Nginx and Supervisor configs
+COPY ./deploy/Ngix/nginx.conf /etc/nginx/sites-available/default
+COPY ./deploy/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN php artisan config:clear && php artisan config:cache
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader
 
+# Set permissions
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Expose HTTP port
+# Expose port 80 for Nginx
 EXPOSE 80
 
-# Start both PHP-FPM and Nginx via Supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Start Nginx + PHP-FPM via Supervisor
+CMD ["/usr/bin/supervisord"]
