@@ -30,7 +30,9 @@ COPY deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-RUN php artisan config:cache
+RUN php artisan config:clear && php artisan config:cache
+
+
 # Expose HTTP port
 EXPOSE 80
 
