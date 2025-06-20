@@ -24,12 +24,14 @@ COPY . /var/www
 COPY ./deploy/nginx.conf /etc/nginx/sites-available/default
 COPY ./deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
+
+# ✅ Create storage symlink
+RUN php artisan storage:link
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
