@@ -12,6 +12,12 @@ use App\Http\Controllers\JobCategoryController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ApplicationController;
 
+
+Route::get('/', function () {
+    return '✅ Laravel is running!';
+});
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
