@@ -21,8 +21,9 @@ WORKDIR /var/www
 COPY . /var/www
 
 # Copy Nginx and Supervisor configs
-COPY ./deploy/Ngix/nginx.conf /etc/nginx/sites-available/default
-COPY ./deploy/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./deploy/nginx.conf /etc/nginx/sites-available/default
+COPY ./deploy/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
