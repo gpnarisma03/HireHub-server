@@ -21,6 +21,7 @@ return [
 
     'allowed_origins' => [
         'https://hirehub-tawny.vercel.app',
+        'http://localhost:3000',
     ],
 
 

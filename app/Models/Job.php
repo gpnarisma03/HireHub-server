@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Job extends Model
 {
     use HasFactory;
@@ -53,6 +53,17 @@ class Job extends Model
     {
         return $this->hasMany(Application::class, 'job_id');
     }
+    public function applicants(): HasManyThrough
+{
+    return $this->hasManyThrough(
+        \App\Models\User::class,          // Final model we want to get
+        \App\Models\Application::class,   // Intermediate model
+        'job_id',     // Foreign key on Application (middle table)
+        'id',         // Foreign key on User
+        'job_id',     // Local key on Job
+        'user_id'     // Local key on Application
+    );
+}
 
     
 }

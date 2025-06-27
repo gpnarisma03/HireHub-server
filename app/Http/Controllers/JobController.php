@@ -51,25 +51,34 @@ class JobController extends Controller
 
 public function index()
 {
-$jobs = Job::with(['company', 'category'])
-    ->where('status', 'open') // ✅ filter here
-    ->orderBy('posted_at', 'desc')
-    ->get();
+    $jobs = Job::with(['company', 'category', 'applications.user']) // Load applications with users
+        ->where('status', 'open')
+        ->orderBy('posted_at', 'desc')
+        ->get();
 
+        $jobs->map(function ($job) {
+            $job->category->open_vacancy_total = $job->category
+                ->jobs()
+                ->where('status', 'open')
+                ->sum('job_vacancy');
 
-    $jobs->map(function ($job) {
-        $job->category->open_vacancy_total = $job->category
-            ->jobs()
-            ->where('status', 'open')
-            ->sum('job_vacancy');
-        return $job;
-    });
+            // FIX: Only include user_id if user exists on application
+            $job->applicant_user_ids = $job->applications
+                ->filter(fn ($app) => $app->user) // ensure user relationship exists
+                ->pluck('user.user_id')
+                ->filter()
+                ->values();
+
+            return $job;
+        });
+
 
     return response()->json([
         'success' => true,
-        'jobs' => $jobs, // ✅ return the modified $jobs
+        'jobs' => $jobs,
     ]);
 }
+
 
 
 

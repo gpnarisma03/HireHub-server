@@ -47,6 +47,9 @@ public function login(Request $request)
         'success' => true,
         'message' => 'Login successful',
         'access_token' => $user->createToken('auth_token')->plainTextToken,
+'user' => [
+    'user_id' => $user->user_id
+],
         'token_type' => 'Bearer',
     ]);
 }
